@@ -34,3 +34,18 @@ Si no tienes ningún package manager, puedes acceder a la siguiente página para
 Para tener acceso a esta api, deberás crear una cuenta gratuita en la [`Página oficial de DeepL`](https://www.deepl.com/es/home), al haber iniciado, darás en la opción de **Crear nueva clave api**, al obtenerla deberás de guardarla muy bien, ya que con esta clave será posible ejecutar todas las funciones especiales.
 
 Se necesitará mucha discreción al momento de utilizar la api de DeepL, ya que acabando el millón de palabras, se deberá pagar una cuota por uso.
+
+## Se requerirá el uso de un entorno virtual de python (El archivo .venv)
+
+Este entorno ya tiene configurado las librerías necesarias para correr el programa. Ojo, es estrictamente necesario tener instalado ffmpeg en la computadora para que funcione.
+Para activar el entorno ejecuta la siguiente línea en la terminal de Powershell
+
+```powershell
+    .venv\Scripts\Activate.ps1
+```
+
+Y para desactivarlo escribe:
+
+```powershell
+    deactivate
+```

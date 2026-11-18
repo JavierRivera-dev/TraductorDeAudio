@@ -8,7 +8,7 @@ load_dotenv()
 api_key = os.getenv("API_KEY")
 
 #Iniciar cliente de deepL
-deepl_client = deepl.DeepLClient(api_key)
+deepl_client = deepl.DeepLClient(api_key) # type: ignore
 
 # 1. Calculamos la ruta exacta del audio de forma automática
 carpeta_actual = os.path.dirname(__file__)
@@ -30,7 +30,7 @@ idioma_detectado = resultado.get("language", "No detectado")
 
 # 5. Mostramos los resultados en la consola
 print("\n" + "="*40)
-print(f"🌐 IDIOMA DETECTADO POR LA IA: {idioma_detectado.upper()}")
+print(f"🌐 IDIOMA DETECTADO POR LA IA: {idioma_detectado.upper()}") # type: ignore
 print("="*40)
 print("\n--- Texto Transcrito ---")
 print(resultado["text"])
@@ -42,5 +42,5 @@ result = deepl_client.translate_text(
 print("\n" + "="*40)
 print("-----Texto Traducido a español-------")
 print("\n" + "="*40)
-print(result.text)
+print(result.text) # type: ignore
 print("\n" + "="*40)
