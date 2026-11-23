@@ -1,0 +1,6 @@
+openai-whisper
+deepl
+python-dotenv
+flask
+sounddevice
+soundfile
