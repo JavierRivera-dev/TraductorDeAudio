@@ -80,3 +80,5 @@ Y para desactivarlo escribe:
 ```powershell
     deactivate
 ```
+
+La integración con deepL todavía está pendiente
