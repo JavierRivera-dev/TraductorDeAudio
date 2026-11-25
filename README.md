@@ -8,7 +8,6 @@ Proyecto de la materia de Inteligencia Artificial. Consiste en un software que t
 | Whisper AI | Gratuito
 | DeepL API  | Gratuito (El primer millón de palabras) |
 | Flask | Gratuito |
-| SoundDevice y SoundFile | Gratuitos |
 
 # Preparar el entorno de Python
 
@@ -20,7 +19,7 @@ py -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-`requirements.txt` instala Flask, Whisper, DeepL, `python-dotenv`, SoundDevice y SoundFile.
+`requirements.txt` instala Flask, Whisper, DeepL y `python-dotenv`.
 
 Whisper también necesita `ffmpeg` instalado en el sistema. En Windows puedes instalarlo con Chocolatey o Scoop:
 
@@ -42,12 +41,11 @@ Desde la raíz del proyecto, con el entorno virtual activado, inicia el servidor
 python .\pagina\app.py
 ```
 
-Abre [http://127.0.0.1:5000](http://127.0.0.1:5000) en el navegador. La página permite enviar un nombre al servidor y solicitar una grabación de audio.
+Abre [http://127.0.0.1:5000](http://127.0.0.1:5000) en el navegador. La página solicita permiso para usar el micrófono del navegador. Puedes iniciar y detener la grabación; al detenerla, el navegador la convierte a WAV y la envía al servidor. El archivo se guarda como `pagina/audio_temp.wav` y cada grabación reemplaza la anterior.
 
-- `POST /api/saludar` recibe un nombre en formato JSON y devuelve un saludo.
-- `POST /api/grabar_audio` graba cinco segundos en estéreo a 44.1 kHz usando el micrófono disponible en la computadora que ejecuta Flask y guarda el resultado en `pagina/audio_temp.wav`. Una nueva grabación sobrescribe ese archivo.
+- `POST /api/grabar_audio` recibe la grabación como `multipart/form-data` y la guarda en el servidor.
 
-La grabación se captura en el servidor, no desde el micrófono del navegador. Aunque la página muestra el título «Transcripción de Audio», actualmente esta ruta solo graba y guarda el WAV; todavía no lo transcribe.
+Aunque la página muestra el título «Transcripción de Audio», actualmente la aplicación web solo graba y guarda el audio; todavía no lo transcribe. La grabación requiere permiso de micrófono y un contexto seguro (por ejemplo, `localhost` o HTTPS).
 
 ## Obtener la API de DeepL
 

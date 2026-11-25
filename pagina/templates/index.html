@@ -9,11 +9,25 @@
 <body>
     <main class="contenedor">
         <h1>Grabadora de audio</h1>
-        <input type="text" id="inputNombre" placeholder="Escribe tu nombre...">
-        <button id="btnEnviar">Enviar a Python</button>
-        <p id="resultado"></p>
-        <h2>Transcripción de Audio</h2>
         <button id="btnGrabar">Grabar Audio</button>
+        <button id="btnDetener" style="display: none;">Detener Grabación</button>
+        <p id="estado" aria-live="polite">Estado: Inactivo</p>
+        <p id="resultado" aria-live="polite"></p>
+
+        <table id="tablaResultados" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            <thead>
+                <tr>
+                    <th>Archivo</th>
+                    <th>Transcripción</th>
+                    <th>Idioma</th>
+                </tr>
+            </thead>
+            <tbody id="tablaResultados">
+                <td id="archivo"></td>
+                <td id="transcripcion"></td>
+                <td id="idioma"></td>
+            </tbody>
+        </table>
     </main>
 
     <script src="/static/script.js"></script>

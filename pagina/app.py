@@ -1,46 +1,69 @@
-from flask import Flask, render_template, request, jsonify
-import os
-import deepl
+from pathlib import Path
+
+from flask import Flask, jsonify, render_template, request
 import whisper
-from dotenv import load_dotenv
-import sounddevice as sd
-import soundfile as sf
 
 
 app = Flask(__name__)
 
-# 1. Ruta principal: entrega el archivo HTML al navegador
+TIPOS_AUDIO = {
+    "audio/wav": ".wav",
+    "audio/x-wav": ".wav",
+}
+
+
 @app.route("/")
 def inicio():
     return render_template("index.html")
 
-# 2. Ruta de API: recibe datos del frontend y responde con JSON
-@app.route("/api/saludar", methods=["POST"])
-def saludar():
-    datos = request.get_json()
-    nombre = datos.get("nombre", "").strip()
-
-    if not nombre:
-        return jsonify({"error": "Por favor escribe un nombre"}), 400
-
-    mensaje_procesado = f"¡Hola, {nombre}! Este mensaje fue generado desde Python."
-    return jsonify({"respuesta": mensaje_procesado})
-
 
 @app.route("/api/grabar_audio", methods=["POST"])
 def grabar_audio():
-    freq = 44100  # Frecuencia de muestreo
-    duracion = 5  # Duración de la grabación en segundos
+    audio = request.files.get("audio")
+    if audio is None:
+        return jsonify({"error": "No se recibió ningún archivo de audio."}), 400
 
-    print("Grabando audio...")
-    audio = sd.rec(int(duracion * freq), samplerate=freq, channels=2)
-    sd.wait()  # Espera a que termine la grabación
+    extension = TIPOS_AUDIO.get(audio.mimetype)
+    if extension is None:
+        return jsonify({"error": "El formato de audio recibido no es compatible."}), 415
 
-    # Guardar el audio en un archivo temporal
-    ruta_audio = os.path.join(os.path.dirname(__file__), "audio_temp.wav")
-    sf.write(ruta_audio, audio, freq)
+    contenido = audio.read()
+    if not contenido:
+        return jsonify({"error": "La grabación está vacía."}), 400
 
-    return jsonify({"respuesta": "Audio grabado con éxito."})
+    ruta_audio = Path(__file__).parent / f"audio_temp{extension}"
+    try:
+        ruta_audio.write_bytes(contenido)
+    except OSError:
+        app.logger.exception("No se pudo guardar la grabación")
+        return jsonify({"error": "No se pudo guardar la grabación en el servidor."}), 500
+
+    return jsonify({
+        "respuesta": "Audio grabado con éxito.",
+        "archivo": ruta_audio.name,
+    })
+
+@app.route("/api/transcribir_audio", methods=["POST"])
+def transcribir_audio(audio_path=None):
+    if audio_path:
+        ruta_audio = Path(audio_path)
+    else:
+        ruta_audio = Path(__file__).parent / "audio_temp.wav"
+    if not ruta_audio.exists():
+        return jsonify({"error": "No se encontró el archivo de audio para transcribir."}), 404
+
+    try:
+        model = whisper.load_model("small")
+        resultado = model.transcribe(str(ruta_audio))
+        texto_transcrito = resultado.get("text", "")
+    except Exception as e:
+        app.logger.exception("Error al transcribir el audio")
+        return jsonify({"error": "Ocurrió un error al transcribir el audio."}), 500
+
+    return jsonify({
+        "texto_transcrito": texto_transcrito,
+        "idioma_detectado": resultado.get("language", "No detectado"),
+    })
 
 if __name__ == "__main__":
     app.run(debug=True)
